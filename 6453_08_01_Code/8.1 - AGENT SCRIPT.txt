@@ -1,0 +1,34 @@
+# Let's see how Agents work in Elixir
+
+iex
+
+# We can create agents with the `start_link` function as we do GenServers. The `start_link` function can receive a single argument which is a function responsible for calculating the Agent's initial state.
+# For our example, let's create an agent which holds an empty list as its starting state
+
+{:ok, agent} = Agent.start_link(fn -> [] end)
+
+# We can get the internal state of the Agent at any time using the AGENT.GET function. This function receives an anonymous function as its argument, and this function is responsible for transforming the state before it gets returned from the agent.
+
+Agent.get(agent, fn state -> state end)
+
+# We can return just the first element of the list by using this transformation function
+
+Agent.get(agent, fn state -> Enum.at(state, 0) end)
+
+# Now, the Agent module also provides a function for updating the Agent's internal state - the UPDATE function. UPDATE also receives a function that transforms the state so it is stored in its transformed state by the Agent.
+# Let's insert an element in this list using this function
+
+Agent.update(agent, fn state -> [:hello | state] end)
+
+# Now if we try to retrieve the Agent's state, we can see that the element was successfully added to the list
+
+Agent.get(agent, fn state -> state end)
+
+# Sometimes we also want the convenience of retrieving the state and also updating it at the same time. To this effect, Elixir provides a function named GET_AND_UPDATE. This function also receives an anonymous function as its second argument but now it expects the return type to be a tuple.
+# The first element of this tuple contains the return value while the second one is the new state to be stored on the Agent
+
+Agent.get_and_update(agent, fn state -> {state, [1, 2, 3]} end)
+
+# This returns our old agent's state and replaces its internal state with a list with 1 2 and 3. We can further corroborate this by checking the agent's internal state again with AGENT.GET
+
+Agent.get(agent, fn state -> state end)

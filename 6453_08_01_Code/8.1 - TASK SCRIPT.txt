@@ -1,0 +1,26 @@
+# OK, so to demonstrate how Tasks work, let's open up an IEX session and do some examples.
+
+iex
+
+# While we can create tasks via `start_link` like with GenServers and Agents, the usual way of using them is via the Task ASYNC and AWAIT functions.
+# Let's launch a with TASK.ASYNC and pass a function that returns the string "HELLO"
+
+task = Task.async(fn -> "Hello" end)
+
+# We've bound the task to the variable named TASK, so we can now check its result by using TASK.AWAIT
+
+result = Task.await(task)
+
+# And since the task has already completed, we have our result back
+# If we try to retrieve the result again, the task will time out after 5 seconds.
+
+result = Task.await(task)
+
+# This is because we've already retrieved the return value of the computation once. We can actually adjust this timeout by passing a second argument to TASK.AWAIT, which is the timeout in milliseconds.
+
+result = Task.await(task, 1000)
+
+# We can now try this with a more lengthy computation and see that AWAIT blocks the process and waits for the result
+
+task = Task.async(fn -> :timer.sleep(10_000); "Hello" end)
+result = Task.await(task, 20_000)
